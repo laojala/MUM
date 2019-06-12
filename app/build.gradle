@@ -52,7 +52,7 @@ android {
         resValue "string", "provider_google_fused", android.defaultConfig.applicationId + ".provider.geofences"
         resValue "string", "provider_openweather", android.defaultConfig.applicationId + ".provider.openweather"
         resValue "string", "provider_sensortag", android.defaultConfig.applicationId + ".provider.sensortag"
-        resValue "string", "provider_stopit", android.defaultConfig.applicationId + ".model.provider.stopit"
+        resValue "string", "provider_mum", android.defaultConfig.applicationId + ".model.provider.mum"
     }
     buildTypes {
         release {

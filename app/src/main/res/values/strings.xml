@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">mum</string>
+    <string name="app_name">MUM</string>
+    <string name="provider_label">MUM app data</string>
 </resources>
