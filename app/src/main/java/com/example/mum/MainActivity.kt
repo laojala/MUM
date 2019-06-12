@@ -6,6 +6,8 @@ import android.os.Bundle
 import com.aware.Aware
 import com.aware.Aware_Preferences
 import com.example.mum.model.Provider
+import kotlinx.android.synthetic.main.activity_main.*
+import android.graphics.Color
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,5 +23,21 @@ class MainActivity : AppCompatActivity() {
         values.put(Provider.Activity_Data.VALUE, 3456)
         values.put(Provider.Activity_Data.SCORE, 123)
         applicationContext.getContentResolver().insert(Provider.Activity_Data.CONTENT_URI, values)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        var currentScore = 23
+
+        if (currentScore >= 0)
+            score.setTextColor(Color.parseColor("#438945"))
+        else
+            score.setTextColor(Color.parseColor("#E40C2B"))
+
+
+        score.text=currentScore.toString()
+
+
     }
 }
