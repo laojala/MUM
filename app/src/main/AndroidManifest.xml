@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.example.mum">
+          xmlns:tools="http://schemas.android.com/tools" package="com.example.mum">
+
+    <permission
+            android:name="com.aware.READ_CONTEXT_DATA"
+            android:description="@string/read_permission"
+            android:icon="@drawable/ic_launcher_settings"
+            android:label="Read AWARE&apos;s Context data"
+            android:protectionLevel="signature" />
+    <permission
+            android:name="com.aware.WRITE_CONTEXT_DATA"
+            android:description="@string/write_permission"
+            android:icon="@drawable/ic_launcher_settings"
+            android:label="Write to AWARE&apos;s Context data"
+            android:protectionLevel="signature" />
 
     <application
             android:allowBackup="true"
@@ -8,7 +21,7 @@
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme" tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -17,5 +30,9 @@
             </intent-filter>
         </activity>
     </application>
+
+    <!--TODO: db provider-->
+
+    <!--TODO: sync service-->
 
 </manifest>

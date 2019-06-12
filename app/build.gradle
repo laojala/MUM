@@ -13,6 +13,46 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        //AWARE core sensors provider authority overrides
+        resValue "string", "provider_accelerometer", android.defaultConfig.applicationId + ".provider.accelerometer"
+        resValue "string", "provider_applications", android.defaultConfig.applicationId + ".provider.applications"
+        resValue "string", "provider_aware", android.defaultConfig.applicationId + ".provider.aware"
+        resValue "string", "provider_barometer", android.defaultConfig.applicationId + ".provider.barometer"
+        resValue "string", "provider_battery", android.defaultConfig.applicationId + ".provider.battery"
+        resValue "string", "provider_bluetooth", android.defaultConfig.applicationId + ".provider.bluetooth"
+        resValue "string", "provider_communication", android.defaultConfig.applicationId + ".provider.communication"
+        resValue "string", "provider_esm", android.defaultConfig.applicationId + ".provider.esm"
+        resValue "string", "provider_gravity", android.defaultConfig.applicationId + ".provider.gravity"
+        resValue "string", "provider_gyroscope", android.defaultConfig.applicationId + ".provider.gyroscope"
+        resValue "string", "provider_installations", android.defaultConfig.applicationId + ".provider.installations"
+        resValue "string", "provider_keyboard", android.defaultConfig.applicationId + ".provider.keyboard"
+        resValue "string", "provider_light", android.defaultConfig.applicationId + ".provider.light"
+        resValue "string", "provider_linear_accelerometer", android.defaultConfig.applicationId + ".provider.accelerometer.linear"
+        resValue "string", "provider_locations", android.defaultConfig.applicationId + ".provider.locations"
+        resValue "string", "provider_magnetometer", android.defaultConfig.applicationId + ".provider.magnetometer"
+        resValue "string", "provider_network", android.defaultConfig.applicationId + ".provider.network"
+        resValue "string", "provider_processor", android.defaultConfig.applicationId + ".provider.processor"
+        resValue "string", "provider_proximity", android.defaultConfig.applicationId + ".provider.proximity"
+        resValue "string", "provider_rotation", android.defaultConfig.applicationId + ".provider.rotation"
+        resValue "string", "provider_screen", android.defaultConfig.applicationId + ".provider.screen"
+        resValue "string", "provider_significant", android.defaultConfig.applicationId + ".provider.significant"
+        resValue "string", "provider_telephony", android.defaultConfig.applicationId + ".provider.telephony"
+        resValue "string", "provider_temperature", android.defaultConfig.applicationId + ".provider.temperature"
+        resValue "string", "provider_timezones", android.defaultConfig.applicationId + ".provider.timezone"
+        resValue "string", "provider_traffic", android.defaultConfig.applicationId + ".provider.traffic"
+        resValue "string", "provider_wifi", android.defaultConfig.applicationId + ".provider.wifi"
+        resValue "string", "provider_device_usage", android.defaultConfig.applicationId + ".provider.device_usage"
+        resValue "string", "provider_ambient_noise", android.defaultConfig.applicationId + ".provider.ambient_noise"
+        resValue "string", "provider_contacts_list", android.defaultConfig.applicationId + ".provider.contacts_list"
+        resValue "string", "provider_conversations", android.defaultConfig.applicationId + ".provider.audio_final"
+        resValue "string", "provider_fitbit", android.defaultConfig.applicationId + ".provider.fitbit"
+        resValue "string", "provider_google_activity_recognition", android.defaultConfig.applicationId + ".provider.gar"
+        resValue "string", "provider_google_login", android.defaultConfig.applicationId + ".provider.google_login"
+        resValue "string", "provider_google_fused", android.defaultConfig.applicationId + ".provider.geofences"
+        resValue "string", "provider_openweather", android.defaultConfig.applicationId + ".provider.openweather"
+        resValue "string", "provider_sensortag", android.defaultConfig.applicationId + ".provider.sensortag"
+        resValue "string", "provider_stopit", android.defaultConfig.applicationId + ".model.provider.stopit"
     }
     buildTypes {
         release {
@@ -28,6 +68,10 @@ android {
             universalApk true
         }
     }
+}
+
+repositories {
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
