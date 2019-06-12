@@ -2,19 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools" package="com.example.mum">
 
-    <permission
-            android:name="com.aware.READ_CONTEXT_DATA"
-            android:description="@string/read_permission"
-            android:icon="@drawable/ic_launcher_settings"
-            android:label="Read AWARE&apos;s Context data"
-            android:protectionLevel="signature" />
-    <permission
-            android:name="com.aware.WRITE_CONTEXT_DATA"
-            android:description="@string/write_permission"
-            android:icon="@drawable/ic_launcher_settings"
-            android:label="Write to AWARE&apos;s Context data"
-            android:protectionLevel="signature" />
-
     <application
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
@@ -50,6 +37,21 @@
                     android:name="android.content.SyncAdapter"
                     android:resource="@xml/sync_mum" />
         </service>
+
+        <service
+                android:name="com.aware.Applications"
+                android:enabled="@bool/accessibility_access"
+                android:exported="true"
+                android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+                <category android:name="android.accessibilityservice.category.FEEDBACK_GENERIC" />
+            </intent-filter>
+            <meta-data
+                    android:name="android.accessibilityservice"
+                    android:resource="@xml/aware_accessibility_config" />
+        </service>
+
     </application>
 
 </manifest>
