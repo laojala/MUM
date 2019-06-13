@@ -21,7 +21,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.fitness.Fitness
-import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.DataType
 import com.google.android.gms.fitness.data.Field.FIELD_STEPS
 import java.util.*
@@ -37,8 +36,7 @@ class MainActivity : AppCompatActivity() {
 
 
     companion object {
-        const val GOOGLE_SIGN_IN_REQUEST_CODE = 10
-        const val GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = 11 // for later reference
+        const val GOOGLE_SIGN_IN_REQUEST_CODE = 10 // for later reference
         const val LOG_TAG = "MUM Fitness History"
     }
 
@@ -151,10 +149,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == GOOGLE_FIT_PERMISSIONS_REQUEST_CODE) {
-                getTodaysStepCount(GoogleSignIn.getLastSignedInAccount(this)!!)
-            }
-            else if (requestCode == GOOGLE_SIGN_IN_REQUEST_CODE) {
+            if (requestCode == GOOGLE_SIGN_IN_REQUEST_CODE) {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(data)
                 getTodaysStepCount(task.result!!)
             }
@@ -194,25 +189,13 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun handleGoogleSignIn() {
-        val fitnessOptions = FitnessOptions.builder()
-            .addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA)
-            .build()
 
-        if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(this), fitnessOptions)) {
-            // no account associated with the app yet
-            if (GoogleSignIn.getLastSignedInAccount(this) == null) {
-                val mGoogleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN)
-                val signInIntent = mGoogleSignInClient.signInIntent
-                startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQUEST_CODE)
-            }
-            // account for this app already used
-            else {
-                GoogleSignIn.requestPermissions(
-                    this, // your activity
-                    GOOGLE_FIT_PERMISSIONS_REQUEST_CODE,
-                    GoogleSignIn.getLastSignedInAccount(this),
-                    fitnessOptions)
-            }
+        // Check if user is already logged in
+        if (GoogleSignIn.getLastSignedInAccount(this) == null) {
+            // user is not signed in yet, open the sign in window
+            val mGoogleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN)
+            val signInIntent = mGoogleSignInClient.signInIntent
+            startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQUEST_CODE)
         } else {
             // user is already signed in, we can get the step count directly
             getTodaysStepCount(GoogleSignIn.getLastSignedInAccount(this)!!);

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MUM</string>
     <string name="provider_label">MUM app data</string>
-    <string name="score_title">Your Score for Today</string>
+    <string name="score_title">Your Balance for Today</string>
     <string name="activities_title">Your Activities Today</string>
     <string name="minutes_title">minutes</string>
     <string name="step_counter_description">steps</string>
