@@ -3,19 +3,17 @@ package com.example.mum
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-import android.util.Log
-import com.aware.Applications
-import com.aware.Aware
-import com.aware.Aware_Preferences
-import com.example.mum.model.Provider
-import kotlinx.android.synthetic.main.activity_main.*
+import android.database.Cursor
 import android.graphics.Color
 import android.net.Uri
+import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import com.aware.Aware
+import com.aware.Aware_Preferences
 import com.example.mum.model.DetailItem
+import com.example.mum.model.Provider
 import com.example.mum.viewHelpers.DetailAdapter
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -23,8 +21,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.fitness.Fitness
 import com.google.android.gms.fitness.data.DataType
 import com.google.android.gms.fitness.data.Field.FIELD_STEPS
+import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
-import android.database.Cursor
 
 class MainActivity : AppCompatActivity() {
 
