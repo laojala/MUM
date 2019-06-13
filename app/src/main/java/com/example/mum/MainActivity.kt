@@ -20,6 +20,7 @@ import com.google.android.gms.fitness.Fitness
 import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.DataType
 import com.google.android.gms.fitness.data.Field.FIELD_STEPS
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -97,6 +98,7 @@ class MainActivity : AppCompatActivity() {
         handleGoogleSignIn()
     }
 
+
     override fun onResume() {
         super.onResume()
 
@@ -111,6 +113,7 @@ class MainActivity : AppCompatActivity() {
         score.text=currentScore.toString()
 
 
+        getTodaySocialValue()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -123,6 +126,29 @@ class MainActivity : AppCompatActivity() {
                 getTodaysStepCount(task.result!!)
             }
         }
+    }
+
+    fun getTodaySocialValue() : Unit {
+
+        val today = Calendar.getInstance()
+        today.set(Calendar.HOUR_OF_DAY, 0)
+        today.set(Calendar.MINUTE, 0)
+        today.set(Calendar.SECOND, 0)
+        today.set(Calendar.MILLISECOND, 0)
+
+        var total_score = 0
+        var total_value = 0.0
+
+        val data = contentResolver.query(Provider.Activity_Data.CONTENT_URI, null, Provider.Activity_Data.TIMESTAMP + " >= " + today.timeInMillis + " AND " + Provider.Activity_Data.SENSOR_TYPE + " LIKE 'social_apps'", null, null)
+        if(data != null && data.moveToFirst()) {
+
+            do {
+                total_score += data.getInt(data.getColumnIndex(Provider.Activity_Data.SCORE))
+                total_value += data.getDouble(data.getColumnIndex(Provider.Activity_Data.VALUE))
+            } while (data.moveToNext())
+        }
+
+        score.text = total_score.toString()
     }
 
     private fun handleGoogleSignIn() {
