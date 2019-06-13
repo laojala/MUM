@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools" package="com.example.mum">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.example.mum">
+
+    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
+    <uses-permission android:name="android.permission.READ_SMS"/>
 
     <application
             android:allowBackup="true"
@@ -8,8 +12,13 @@
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme" tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity">
+            android:theme="@style/AppTheme"
+            tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".MainActivity"/>
+        <activity
+                android:name=".SplashActivity"
+                android:screenOrientation="portrait"
+                android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -24,34 +33,34 @@
                 android:label="@string/provider_label"
                 android:readPermission="com.aware.READ_CONTEXT_DATA"
                 android:syncable="true"
-                android:writePermission="com.aware.WRITE_CONTEXT_DATA" />
+                android:writePermission="com.aware.WRITE_CONTEXT_DATA"/>
 
         <service
                 android:name=".model.Mum_Sync"
                 android:exported="true">
             <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
+                <action android:name="android.content.SyncAdapter"/>
             </intent-filter>
 
             <meta-data
                     android:name="android.content.SyncAdapter"
-                    android:resource="@xml/sync_mum" />
+                    android:resource="@xml/sync_mum"/>
         </service>
-
         <service
                 android:name="com.aware.Applications"
                 android:enabled="@bool/accessibility_access"
                 android:exported="true"
                 android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-                <category android:name="android.accessibilityservice.category.FEEDBACK_GENERIC" />
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+
+                <category android:name="android.accessibilityservice.category.FEEDBACK_GENERIC"/>
             </intent-filter>
+
             <meta-data
                     android:name="android.accessibilityservice"
-                    android:resource="@xml/aware_accessibility_config" />
+                    android:resource="@xml/aware_accessibility_config"/>
         </service>
-
     </application>
 
 </manifest>
