@@ -32,5 +32,11 @@ class DetailAdapter(private val myDataset: Array<DetailItem>) : RecyclerView.Ada
         p0.description.text = myDataset[p1].description
         p0.value.text = myDataset[p1].value.toString()
         p0.score.text = myDataset[p1].score.toString()
+        if (myDataset[p1].score >= 0) {
+            p0.score.setBackgroundResource(R.color.positiveColor)
+        }
+        else {
+            p0.score.setBackgroundResource(R.color.negativeColor)
+        }
     }
 }

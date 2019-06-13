@@ -7,6 +7,7 @@ import android.database.Cursor
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -58,12 +59,12 @@ class MainActivity : AppCompatActivity() {
         var currentScore = getTodaySocialValue()
 
         if (currentScore >= 0)
-            score.setTextColor(Color.parseColor("#438945"))
+            score.setTextColor(ContextCompat.getColor(this, R.color.positiveColor))
         else
-            score.setTextColor(Color.parseColor("#E40C2B"))
+            score.setTextColor(ContextCompat.getColor(this, R.color.negativeColor))
 
 
-        score.text=currentScore.toString()
+        score.text = currentScore.toString()
 
 
         getTodaySocialValue()
