@@ -25,6 +25,7 @@ import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.DataType
 import com.google.android.gms.fitness.data.Field.FIELD_STEPS
 import java.util.*
+import android.database.Cursor
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,6 +33,8 @@ class MainActivity : AppCompatActivity() {
     var closed: Long = 0L
     var time: Long = 0L
     var app_name: String =""
+
+
 
     companion object {
         const val GOOGLE_SIGN_IN_REQUEST_CODE = 10
@@ -47,6 +50,21 @@ class MainActivity : AppCompatActivity() {
         Aware.setSetting(applicationContext, Aware_Preferences.STATUS_APPLICATIONS, true)
 
         Applications.isAccessibilityServiceActive(applicationContext)
+
+
+
+        // Dummy insert to db
+        val values = ContentValues()
+        values.put(Provider.Activity_Data.TIMESTAMP, System.currentTimeMillis())
+        values.put(Provider.Activity_Data.DEVICE_ID, Aware.getSetting(applicationContext, Aware_Preferences.DEVICE_ID))
+        values.put(Provider.Activity_Data.SENSOR_TYPE, "social_apps")
+        values.put(Provider.Activity_Data.VALUE, 777777.1)
+        values.put(Provider.Activity_Data.SCORE, -777777)
+        applicationContext.getContentResolver().insert(Provider.Activity_Data.CONTENT_URI, values)
+        // Dummy insert to db REMOVE everything from above
+
+
+
 
         Applications.setSensorObserver(object : Applications.AWARESensorObserver {
             override fun onCrash(data: ContentValues?) {
@@ -117,7 +135,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        var currentScore = 23
+        var currentScore = getTodaySocialValue()
 
         if (currentScore >= 0)
             score.setTextColor(Color.parseColor("#438945"))
@@ -143,7 +161,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun getTodaySocialValue() : Unit {
+    private fun getTodayCursorForActivity(activity: String) : Cursor? {
 
         val today = Calendar.getInstance()
         today.set(Calendar.HOUR_OF_DAY, 0)
@@ -151,20 +169,29 @@ class MainActivity : AppCompatActivity() {
         today.set(Calendar.SECOND, 0)
         today.set(Calendar.MILLISECOND, 0)
 
-        var total_score = 0
-        var total_value = 0.0
+        val cursor = contentResolver.query(Provider.Activity_Data.CONTENT_URI, null, Provider.Activity_Data.TIMESTAMP + " >= " + today.timeInMillis + " AND " + Provider.Activity_Data.SENSOR_TYPE + " LIKE '${activity}'", null, null)
 
-        val data = contentResolver.query(Provider.Activity_Data.CONTENT_URI, null, Provider.Activity_Data.TIMESTAMP + " >= " + today.timeInMillis + " AND " + Provider.Activity_Data.SENSOR_TYPE + " LIKE 'social_apps'", null, null)
+        return cursor
+
+    }
+
+    private fun getTodaySocialValue() : Int {
+
+        var data = getTodayCursorForActivity("social_apps")
+        var totalScore = 0
+
         if(data != null && data.moveToFirst()) {
 
             do {
-                total_score += data.getInt(data.getColumnIndex(Provider.Activity_Data.SCORE))
-                total_value += data.getDouble(data.getColumnIndex(Provider.Activity_Data.VALUE))
+                totalScore += data.getInt(data.getColumnIndex(Provider.Activity_Data.SCORE))
             } while (data.moveToNext())
+
         }
 
-        score.text = total_score.toString()
+        return (totalScore /  60000)
+
     }
+
 
     private fun handleGoogleSignIn() {
         val fitnessOptions = FitnessOptions.builder()
