@@ -12,6 +12,7 @@ import com.aware.Aware_Preferences
 import com.example.mum.model.Provider
 import kotlinx.android.synthetic.main.activity_main.*
 import android.graphics.Color
+import android.net.Uri
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -163,10 +164,25 @@ class MainActivity : AppCompatActivity() {
                     println("step Count not available")
                 }
                 else {
+                    val value = it.dataPoints[0].getValue(FIELD_STEPS).asInt()
+                    insertSensorValue("stepCounter", value, value) // TODO replace second value with score
                     println("step Count: ${it.dataPoints[0].getValue(FIELD_STEPS).asInt()}")
                 }
             }
             .addOnFailureListener { println("Couldn't retrieve data") }
 
+    }
+
+    private fun insertSensorValue(sensorType: String, value: Int, score: Int): Uri? {
+        val values = ContentValues()
+        values.put(Provider.Activity_Data.TIMESTAMP, System.currentTimeMillis())
+        values.put(Provider.Activity_Data.DEVICE_ID, Aware.getSetting(applicationContext, Aware_Preferences.DEVICE_ID))
+        values.put(Provider.Activity_Data.SENSOR_TYPE, sensorType)
+        values.put(Provider.Activity_Data.VALUE, value)
+        values.put(
+            Provider.Activity_Data.SCORE,
+            score
+        ) // for socials can be kept in ms; transferred to mins for ui only
+        return applicationContext.contentResolver.insert(Provider.Activity_Data.CONTENT_URI, values)
     }
 }
