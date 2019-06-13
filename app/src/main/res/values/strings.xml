@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">MUM</string>
     <string name="provider_label">MUM app data</string>
+    <string name="step_counter_description">steps</string>
 </resources>

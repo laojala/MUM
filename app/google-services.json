@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "520525837574",
+    "firebase_url": "https://mum-ubiss.firebaseio.com",
+    "project_id": "mum-ubiss",
+    "storage_bucket": "mum-ubiss.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:520525837574:android:8f65d2c290224c72",
+        "android_client_info": {
+          "package_name": "com.example.mum"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "520525837574-74tr6a12jb5e5crplkuvuhcs75q1n566.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mum",
+            "certificate_hash": "8a8875018c0ae391f46c4a672585a1da6f4cc119"
+          }
+        },
+        {
+          "client_id": "520525837574-7vhfq15stm2a8mgi0b59nua6c31ej757.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIZ0lnGB4g9E22HLedMY8VsRJBg17OREc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "520525837574-7vhfq15stm2a8mgi0b59nua6c31ej757.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
