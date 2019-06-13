@@ -103,8 +103,8 @@ class SplashActivity : AppCompatActivity() {
 
         // Open MainActivity when all conditions are ok
         if (permissions_ok) {
-            val main = Intent(this, MainActivity::class.java)
-            startActivity(main)
+            val instructions = Intent(this, InstructionsActivity::class.java)
+            startActivity(instructions)
             finish()
 
         } else {
