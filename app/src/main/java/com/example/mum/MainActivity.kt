@@ -35,23 +35,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-       
-
-
-        // Dummy insert to db
-        val values = ContentValues()
-        values.put(Provider.Activity_Data.TIMESTAMP, System.currentTimeMillis())
-        values.put(Provider.Activity_Data.DEVICE_ID, Aware.getSetting(applicationContext, Aware_Preferences.DEVICE_ID))
-        values.put(Provider.Activity_Data.SENSOR_TYPE, "social_apps")
-        values.put(Provider.Activity_Data.VALUE, 777777.1)
-        values.put(Provider.Activity_Data.SCORE, -777777)
-        applicationContext.getContentResolver().insert(Provider.Activity_Data.CONTENT_URI, values)
-        // Dummy insert to db REMOVE everything from above
-
-
-
-
         
         // Create the connection to the Fitness API
         handleGoogleSignIn()
