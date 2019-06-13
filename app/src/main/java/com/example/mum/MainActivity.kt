@@ -13,6 +13,10 @@ import com.example.mum.model.Provider
 import kotlinx.android.synthetic.main.activity_main.*
 import android.graphics.Color
 import android.net.Uri
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import com.example.mum.model.DetailItem
+import com.example.mum.viewHelpers.DetailAdapter
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -95,6 +99,17 @@ class MainActivity : AppCompatActivity() {
 
         // Create the connection to the Fitness API
         handleGoogleSignIn()
+
+        // set up the list with the details for the current day
+        val dummyList = arrayOf(DetailItem("steps taken", 23423, 45), DetailItem("minutes on the phone", 12, 12))
+
+        val viewManager = LinearLayoutManager(this)
+        val viewAdapter = DetailAdapter(dummyList)
+
+        findViewById<RecyclerView>(R.id.detail_item_list).apply {
+            layoutManager = viewManager
+            adapter = viewAdapter
+        }
     }
 
     override fun onResume() {
