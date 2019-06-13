@@ -39,8 +39,10 @@ class MainActivity : AppCompatActivity() {
         // Create the connection to the Fitness API
         handleGoogleSignIn()
 
+        insertSensorValue("call_minutes", 12, 12)
+
         // set up the list with the details for the current day
-        val dummyList = arrayOf(DetailItem("steps taken", 23423, 45), DetailItem("minutes on the phone", 12, 12))
+        val dummyList = getActivityList()
 
         val viewManager = LinearLayoutManager(this)
         val viewAdapter = DetailAdapter(dummyList)
@@ -73,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == GOOGLE_SIGN_IN_REQUEST_CODE) {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-                getTodaysStepCount(task.result!!)
+                updateTodaysStepCount(task.result!!)
             }
         }
     }
@@ -109,6 +111,43 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun getActivityList() : Array<DetailItem> {
+
+        val coveredActivities = mutableListOf<String>()
+
+        val today = Calendar.getInstance()
+        today.set(Calendar.HOUR_OF_DAY, 0)
+        today.set(Calendar.MINUTE, 0)
+        today.set(Calendar.SECOND, 0)
+        today.set(Calendar.MILLISECOND, 0)
+
+        val data = contentResolver.query(Provider.Activity_Data.CONTENT_URI, null, Provider.Activity_Data.TIMESTAMP + " >= " + today.timeInMillis, null, Provider.Activity_Data.TIMESTAMP + " DESC")
+
+        val activityList = mutableListOf<DetailItem>()
+
+        if(data != null && data.moveToFirst()) {
+
+            do {
+                val type = data.getString(data.getColumnIndex(Provider.Activity_Data.SENSOR_TYPE))
+                if (!coveredActivities.contains(type)) {
+                    coveredActivities.add(type)
+                    val description = getActivityDescription(type)
+                    if (!description.isBlank()) {
+                        val value = data.getInt(data.getColumnIndex(Provider.Activity_Data.VALUE))
+                        val score = data.getInt(data.getColumnIndex(Provider.Activity_Data.SCORE))
+                        activityList.add(DetailItem(description, value, score))
+                    }
+
+                }
+
+            } while (data.moveToNext())
+
+        }
+
+        return activityList.toTypedArray()
+
+    }
+
 
     private fun handleGoogleSignIn() {
 
@@ -120,15 +159,14 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQUEST_CODE)
         } else {
             // user is already signed in, we can get the step count directly
-            getTodaysStepCount(GoogleSignIn.getLastSignedInAccount(this)!!);
+            updateTodaysStepCount(GoogleSignIn.getLastSignedInAccount(this)!!);
         }
     }
 
     /**
      * retrieve the device's step count for the current day
-     * TODO: add callback or save to database
      */
-    private fun getTodaysStepCount(googleAccount: GoogleSignInAccount) {
+    private fun updateTodaysStepCount(googleAccount: GoogleSignInAccount) {
 
         Fitness.getHistoryClient(this, googleAccount)
             .readDailyTotalFromLocalDevice(DataType.TYPE_STEP_COUNT_DELTA)
@@ -138,7 +176,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 else {
                     val value = it.dataPoints[0].getValue(FIELD_STEPS).asInt()
-                    insertSensorValue("stepCounter", value, value) // TODO replace second value with score
+                    insertSensorValue("step_count", value, value) // TODO replace second value with score
                     println("step Count: ${it.dataPoints[0].getValue(FIELD_STEPS).asInt()}")
                 }
             }
@@ -157,5 +195,16 @@ class MainActivity : AppCompatActivity() {
             score
         ) // for socials can be kept in ms; transferred to mins for ui only
         return applicationContext.contentResolver.insert(Provider.Activity_Data.CONTENT_URI, values)
+    }
+
+    // TODO move to an enum or something like that
+    private fun getActivityDescription(type: String): String {
+
+        return when(type) {
+            "social_apps" -> getString(R.string.social_description)
+            "step_count" -> getString(R.string.step_counter_description)
+            "call_minutes" -> getString(R.string.call_description)
+            else -> ""
+        }
     }
 }
