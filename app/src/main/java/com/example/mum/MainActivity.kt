@@ -39,8 +39,6 @@ class MainActivity : AppCompatActivity() {
         // Create the connection to the Fitness API
         handleGoogleSignIn()
 
-        insertSensorValue("call_minutes", 12, 12)
-
         // set up the list with the details for the current day
         val dummyList = getActivityList()
 
