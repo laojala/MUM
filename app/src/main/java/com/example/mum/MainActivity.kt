@@ -24,10 +24,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    var opened: Long = 0L
-    var closed: Long = 0L
-    var time: Long = 0L
-    var app_name: String =""
+
 
     companion object {
         const val GOOGLE_SIGN_IN_REQUEST_CODE = 10
@@ -39,60 +36,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Aware.startAWARE(applicationContext)
-        Aware.setSetting(applicationContext, Aware_Preferences.STATUS_APPLICATIONS, true)
 
-        Applications.isAccessibilityServiceActive(applicationContext)
-
-        Applications.setSensorObserver(object : Applications.AWARESensorObserver {
-            override fun onCrash(data: ContentValues?) {
-            }
-
-            override fun onNotification(data: ContentValues?) {
-            }
-
-            override fun onBackground(data: ContentValues?) {
-            }
-
-            override fun onKeyboard(data: ContentValues?) {
-            }
-
-            override fun onTouch(data: ContentValues?) {
-            }
-
-            override fun onForeground(data: ContentValues?) {
-
-                if (opened != 0L) {
-                    // calculate time
-                    closed = data!!.getAsLong("timestamp")
-                    time = closed - opened
-
-                    // insert data to db
-                    Log.d("MUMTAG", "$app_name was used for $time ms")
-                    val values = ContentValues()
-                    values.put(Provider.Activity_Data.TIMESTAMP, System.currentTimeMillis())
-                    values.put(Provider.Activity_Data.DEVICE_ID, Aware.getSetting(applicationContext, Aware_Preferences.DEVICE_ID))
-                    values.put(Provider.Activity_Data.SENSOR_TYPE, "social_apps")
-                    values.put(Provider.Activity_Data.VALUE, time)
-                    values.put(Provider.Activity_Data.SCORE, time) // for socials can be kept in ms; transferred to mins for ui only
-                    applicationContext.getContentResolver().insert(Provider.Activity_Data.CONTENT_URI, values)
-
-                    // clear values for next turn
-                    opened = 0L;
-                    closed = 0L;
-                    time = 0L;
-
-                } else {
-                    //check opened app package name
-                    app_name = data!!.getAsString("package_name")
-
-                    if (app_name.equals("com.instagram.android") ||
-                        app_name.equals("com.google.android.youtube")) {
-                        opened = data.getAsLong("timestamp")
-                    }
-                }
-            }
-        })
 
         // Create the connection to the Fitness API
         handleGoogleSignIn()
