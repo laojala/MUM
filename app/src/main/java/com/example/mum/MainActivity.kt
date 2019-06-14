@@ -18,6 +18,7 @@ import com.example.mum.model.Provider
 import com.example.mum.viewHelpers.DetailAdapter
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.fitness.Fitness
 import com.google.android.gms.fitness.data.DataType
@@ -74,7 +75,9 @@ class MainActivity : AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == GOOGLE_SIGN_IN_REQUEST_CODE) {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-                updateTodaysStepCount(task.result!!)
+                task.addOnSuccessListener {
+                    updateTodaysStepCount(task.result!!)
+                }
             }
         }
     }
@@ -149,6 +152,10 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun handleGoogleSignIn() {
+
+//        val client = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN)
+//        client.signOut()
+
 
         // Check if user is already logged in
         if (GoogleSignIn.getLastSignedInAccount(this) == null) {
