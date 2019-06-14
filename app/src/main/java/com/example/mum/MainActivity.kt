@@ -11,6 +11,8 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.Menu
+import android.view.MenuItem
 import com.aware.Aware
 import com.aware.Aware_Preferences
 import com.example.mum.model.DetailItem
@@ -32,6 +34,22 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val GOOGLE_SIGN_IN_REQUEST_CODE = 10 // for later reference
         const val LOG_TAG = "MUM Fitness History"
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        val id = item!!.getItemId()
+
+        if (id == R.id.menu_instructions) {
+            val instructions = Intent(this, InstructionsActivity::class.java)
+            startActivity(instructions)
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

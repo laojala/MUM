@@ -16,4 +16,8 @@
         <item name="android:windowBackground">@drawable/ic_splash</item>
     </style>
 
+    <style name="Button.Outlined" parent="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="android:background">@drawable/bg_btn_outlined</item>
+    </style>
+
 </resources>

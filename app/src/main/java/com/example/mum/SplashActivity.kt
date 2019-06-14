@@ -2,6 +2,7 @@ package com.example.mum
 
 import android.Manifest
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -101,14 +102,23 @@ class SplashActivity : AppCompatActivity() {
             }
         }
 
-        // Open MainActivity when all conditions are ok
+        // Open Instructions on first run, MainActivity on following
         if (permissions_ok) {
-            val instructions = Intent(this, InstructionsActivity::class.java)
-            startActivity(instructions)
-            finish()
+            val pref = (applicationContext).getSharedPreferences("instructions", Context.MODE_PRIVATE)
+
+            if (!pref.getBoolean("hidden", false)) {
+                val instructions = Intent(this, InstructionsActivity::class.java)
+                startActivity(instructions)
+                finish()
+            } else {
+                val main = Intent(this, MainActivity::class.java)
+                startActivity(main)
+                finish()
+            }
 
         } else {
 
+            //Request permissions
             val permissions = Intent(this, PermissionsHandler::class.java)
             permissions.putExtra(PermissionsHandler.EXTRA_REQUIRED_PERMISSIONS, REQUIRED_PERMISSIONS)
             permissions.flags = Intent.FLAG_ACTIVITY_NEW_TASK
