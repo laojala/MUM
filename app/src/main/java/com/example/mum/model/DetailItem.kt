@@ -1,4 +1,4 @@
 package com.example.mum.model
 
-class DetailItem(val description: String, val value: Int, val score: Int) {
+class DetailItem(val description: String, var value: Int, var score: Int) {
 }

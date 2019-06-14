@@ -2,6 +2,7 @@ package com.example.mum
 
 import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.graphics.Color
@@ -25,6 +26,8 @@ import com.google.android.gms.fitness.data.DataType
 import com.google.android.gms.fitness.data.Field.FIELD_STEPS
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
@@ -46,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         val dummyList = getActivityList()
 
         val viewManager = LinearLayoutManager(this)
-        val viewAdapter = DetailAdapter(dummyList)
+        val viewAdapter = DetailAdapter(dummyList.values.toTypedArray())
 
         findViewById<RecyclerView>(R.id.detail_item_list).apply {
             layoutManager = viewManager
@@ -58,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        var currentScore = getActivityList().sumBy { it.score }
+        val currentScore = getActivityList().values.sumBy { it.score }
 
         // Colour the daily balance depending on its value
         if (currentScore >= 0)
@@ -118,9 +121,9 @@ class MainActivity : AppCompatActivity() {
     /**
      * returns the current day activities including description, score, and value from the database
      */
-    private fun getActivityList() : Array<DetailItem> {
+    private fun getActivityList() : HashMap<String, DetailItem> {
 
-        val coveredActivities = mutableListOf<String>()
+        val activityItems = hashMapOf<String, DetailItem>()
 
         val today = Calendar.getInstance()
         today.set(Calendar.HOUR_OF_DAY, 0)
@@ -130,28 +133,35 @@ class MainActivity : AppCompatActivity() {
 
         val data = contentResolver.query(Provider.Activity_Data.CONTENT_URI, null, Provider.Activity_Data.TIMESTAMP + " >= " + today.timeInMillis, null, Provider.Activity_Data.TIMESTAMP + " DESC")
 
-        val activityList = mutableListOf<DetailItem>()
-
         if(data != null && data.moveToFirst()) {
 
             do {
                 val type = data.getString(data.getColumnIndex(Provider.Activity_Data.SENSOR_TYPE))
-                if (!coveredActivities.contains(type)) {
-                    coveredActivities.add(type)
+                if (!activityItems.containsKey(type)) {
                     val description = getActivityDescription(type)
                     if (!description.isBlank()) {
                         val value = data.getInt(data.getColumnIndex(Provider.Activity_Data.VALUE))
                         val score = data.getInt(data.getColumnIndex(Provider.Activity_Data.SCORE))
-                        activityList.add(DetailItem(description, value, score))
+                        activityItems[type] = DetailItem(description, value, score)
                     }
-
+                }
+                else if (type == "social_apps" && activityItems.containsKey(type)) {
+                    val value = data.getInt(data.getColumnIndex(Provider.Activity_Data.VALUE))
+                    val score = data.getInt(data.getColumnIndex(Provider.Activity_Data.SCORE))
+                    activityItems[type]!!.score += score
+                    activityItems[type]!!.value += value
                 }
 
             } while (data.moveToNext())
 
         }
 
-        return activityList.toTypedArray()
+        // the social app time is stored in milliseconds, but for the display, we want it in minutes
+        // We are also rounding up to 1 minute if the user was spending less time than that on the social apps
+        activityItems["social_apps"]?.value = Math.max((activityItems["social_apps"]!!.value / 60000.toDouble()).roundToInt(), 1)
+        activityItems["social_apps"]?.score = activityItems["social_apps"]!!.value * (-1)
+
+        return activityItems
 
     }
 
