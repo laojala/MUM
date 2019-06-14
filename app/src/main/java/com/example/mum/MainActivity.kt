@@ -2,9 +2,10 @@ package com.example.mum
 
 import android.app.Activity
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.database.Cursor
+import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
@@ -18,6 +19,13 @@ import com.aware.Aware_Preferences
 import com.example.mum.model.DetailItem
 import com.example.mum.model.Provider
 import com.example.mum.viewHelpers.DetailAdapter
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -25,14 +33,14 @@ import com.google.android.gms.fitness.Fitness
 import com.google.android.gms.fitness.data.DataType
 import com.google.android.gms.fitness.data.Field.FIELD_STEPS
 import kotlinx.android.synthetic.main.activity_main.*
+import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var detailAdapter: DetailAdapter
+    private lateinit var mChart: LineChart
 
     companion object {
         const val GOOGLE_SIGN_IN_REQUEST_CODE = 10 // for later reference
@@ -68,6 +76,8 @@ class MainActivity : AppCompatActivity() {
             layoutManager = viewManager
             adapter = detailAdapter
         }
+
+        mChart = findViewById(R.id.temp_plot)
     }
 
 
@@ -104,6 +114,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         score.text = currentScore.toString()
+
+        createHistoryGraph()
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -153,15 +166,28 @@ class MainActivity : AppCompatActivity() {
      */
     private fun getActivityList() : HashMap<String, DetailItem> {
 
+        return getActivityListForDays(1, 0)
+
+    }
+
+    private fun getActivityListForDays(startDay : Int, endDay : Int) : HashMap<String, DetailItem>  {
         val activityItems = hashMapOf<String, DetailItem>()
 
-        val today = Calendar.getInstance()
-        today.set(Calendar.HOUR_OF_DAY, 0)
-        today.set(Calendar.MINUTE, 0)
-        today.set(Calendar.SECOND, 0)
-        today.set(Calendar.MILLISECOND, 0)
+        val lastDay = Calendar.getInstance()
+        lastDay.set(Calendar.HOUR_OF_DAY, 0)
+        lastDay.set(Calendar.MINUTE, 0)
+        lastDay.set(Calendar.SECOND, 0)
+        lastDay.set(Calendar.MILLISECOND, 0)
+        lastDay.add(Calendar.DAY_OF_YEAR, -endDay + 1)
 
-        val data = contentResolver.query(Provider.Activity_Data.CONTENT_URI, null, Provider.Activity_Data.TIMESTAMP + " >= " + today.timeInMillis, null, Provider.Activity_Data.TIMESTAMP + " DESC")
+        val firstDay = Calendar.getInstance()
+        firstDay.set(Calendar.HOUR_OF_DAY, 0)
+        firstDay.set(Calendar.MINUTE, 0)
+        firstDay.set(Calendar.SECOND, 0)
+        firstDay.set(Calendar.MILLISECOND, 0)
+        firstDay.add(Calendar.DAY_OF_YEAR, -startDay)
+
+        val data = contentResolver.query(Provider.Activity_Data.CONTENT_URI, null, Provider.Activity_Data.TIMESTAMP + " > " + firstDay.timeInMillis + " AND " + Provider.Activity_Data.TIMESTAMP + " < " + lastDay.timeInMillis, null, Provider.Activity_Data.TIMESTAMP + " DESC")
 
         if(data != null && data.moveToFirst()) {
 
@@ -192,7 +218,6 @@ class MainActivity : AppCompatActivity() {
         activityItems["social_apps"]?.score = activityItems["social_apps"]!!.value * (-1)
 
         return activityItems
-
     }
 
 
@@ -261,5 +286,119 @@ class MainActivity : AppCompatActivity() {
             "call_minutes" -> getString(R.string.call_description)
             else -> ""
         }
+    }
+
+    private fun createHistoryGraph() {
+
+        println("scores of the last days " + getScoresForLastDays(5).map{ it.value })
+        val date = Calendar.getInstance()
+        date.add(Calendar.DAY_OF_YEAR, -4)
+
+        // create the list of the data
+        val entries = arrayListOf<Entry>()
+        for (i in 0..4) {
+            entries.add(Entry(date.timeInMillis.toFloat(), (Math.random() * 400).toFloat() - 200.toFloat()))
+            date.add(Calendar.DAY_OF_YEAR, 1)
+        }
+
+        val dataSet = LineDataSet(entries, resources.getString(R.string.graph_description))
+        dataSet.color = Color.parseColor("#33B5E5")
+        dataSet.setDrawValues(false)
+        dataSet.setDrawCircles(true)
+        dataSet.lineWidth = 2f
+
+        val data = LineData(dataSet)
+
+        mChart.description.setEnabled(false)
+        mChart.data = data
+        mChart.invalidate() //refresh
+
+        val params = mChart.layoutParams
+        params.height = 400
+        mChart.layoutParams = params
+        mChart.contentDescription = ""
+        mChart.setBackgroundColor(Color.WHITE)
+        mChart.setDrawGridBackground(false)
+        mChart.setDrawBorders(false)
+
+        val left = mChart.axisLeft
+        left.setDrawLabels(true)
+        left.setDrawGridLines(false)
+        left.setDrawAxisLine(false)
+        left.granularity = 1.toFloat()
+        left.isGranularityEnabled = true
+        left.setDrawZeroLine(true)
+
+        val right = mChart.axisRight
+        right.setDrawAxisLine(false)
+        right.setDrawLabels(false)
+        right.setDrawGridLines(false)
+
+        val bottom = mChart.xAxis
+        bottom.position = XAxis.XAxisPosition.BOTTOM
+        bottom.setDrawGridLines(false)
+        bottom.isGranularityEnabled = true
+        bottom.granularity = 1.toFloat()
+
+        val l = mChart.legend
+        l.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+        l.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+        l.form = Legend.LegendForm.LINE
+        l.typeface = Typeface.DEFAULT_BOLD
+
+        val xAxis = mChart.xAxis
+        xAxis.setCenterAxisLabels(true);
+        xAxis.valueFormatter = object : ValueFormatter() {
+
+            val mFormat = SimpleDateFormat("dd MMM", Locale.ENGLISH)
+
+            override fun getFormattedValue(value : Float): String {
+                return mFormat.format(Date(value.toLong()))
+            }
+        }
+
+    }
+
+    private fun getScoresForLastDays(numberOfDays: Int) : HashMap<Calendar, Int> {
+
+        val scoreList = hashMapOf<Calendar, Int>()
+
+        for (i in numberOfDays downTo 1) {
+            val currentDay = Calendar.getInstance()
+            currentDay.set(Calendar.HOUR_OF_DAY, 0)
+            currentDay.set(Calendar.MINUTE, 0)
+            currentDay.set(Calendar.SECOND, 0)
+            currentDay.set(Calendar.MILLISECOND, 0)
+            currentDay.add(Calendar.DAY_OF_YEAR, -i)
+
+            val activityList = getActivityListForDays(i, i - 1)
+            scoreList[currentDay] = activityList.values.sumBy { it.score }
+        }
+
+        return scoreList
+    }
+
+    private fun addDummyHistoryData() {
+
+        val scores = intArrayOf(242, 123, -12, 34)
+        val today = Calendar.getInstance()
+
+        for (i in 0 until scores.size) {
+            today.add(Calendar.DAY_OF_YEAR, -i - 1)
+
+            val values = ContentValues()
+
+            values.put(Provider.Activity_Data.TIMESTAMP, System.currentTimeMillis())
+            values.put(Provider.Activity_Data.DEVICE_ID, Aware.getSetting(applicationContext, Aware_Preferences.DEVICE_ID))
+            values.put(Provider.Activity_Data.SENSOR_TYPE, "step_count")
+            values.put(Provider.Activity_Data.VALUE, scores[i])
+            values.put(
+                Provider.Activity_Data.SCORE,
+                scores[i]
+            )
+
+            applicationContext.contentResolver.insert(Provider.Activity_Data.CONTENT_URI, values)
+        }
+
     }
 }

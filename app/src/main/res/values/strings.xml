@@ -6,4 +6,5 @@
     <string name="step_counter_description">steps</string>
     <string name="call_description">seconds on the phone</string>
     <string name="social_description">minutes spent on social media</string>
+    <string name="graph_description">Your Score History</string>
 </resources>
