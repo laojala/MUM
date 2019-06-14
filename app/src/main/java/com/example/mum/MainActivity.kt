@@ -81,14 +81,20 @@ class MainActivity : AppCompatActivity() {
 
         val currentScore = getActivityList().values.sumBy { it.score }
 
+
         // Colour the daily balance depending on its value
-        if (currentScore >= 0)
+        if (currentScore >= 0) {
             // good score - let's colour it green
             score.setTextColor(ContextCompat.getColor(this, R.color.positiveColor))
-        else
+            scoreTitle.text = "Great job today!"
+            scoreText.text = ""
+        }
+        else {
             // negative score - let's colour it red
             score.setTextColor(ContextCompat.getColor(this, R.color.negativeColor))
-
+            scoreTitle.text = "Oops. Negative balance"
+            scoreText.text = "Maybe try to have a walk"
+        }
 
         score.text = currentScore.toString()
 
