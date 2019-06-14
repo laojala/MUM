@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val GOOGLE_SIGN_IN_REQUEST_CODE = 10 // for later reference
+        const val USE_DUMMY_VALUES = true
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -65,6 +66,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+//        addDummyHistoryData()
 
         // set up the list with the details for the current day
         val dummyList = getActivityList()
@@ -290,21 +293,30 @@ class MainActivity : AppCompatActivity() {
 
     private fun createHistoryGraph() {
 
-        println("scores of the last days " + getScoresForLastDays(5).map{ it.value })
         val date = Calendar.getInstance()
         date.add(Calendar.DAY_OF_YEAR, -4)
+
+        val scores = getScoresForLastDays(5).map{ it.value }
+        println("scores of the last days $scores")
 
         // create the list of the data
         val entries = arrayListOf<Entry>()
         for (i in 0..4) {
-            entries.add(Entry(date.timeInMillis.toFloat(), (Math.random() * 400).toFloat() - 200.toFloat()))
+            // TODO
+            if (USE_DUMMY_VALUES) {
+                entries.add(Entry(date.timeInMillis.toFloat(), (Math.random() * 400).toFloat() - 200.toFloat()))
+            }
+            else {
+                entries.add(Entry(date.timeInMillis.toFloat(), scores[i].toFloat()))
+            }
             date.add(Calendar.DAY_OF_YEAR, 1)
         }
 
         val dataSet = LineDataSet(entries, resources.getString(R.string.graph_description))
-        dataSet.color = Color.parseColor("#33B5E5")
+        dataSet.color = ContextCompat.getColor(this, R.color.colorPrimary)
         dataSet.setDrawValues(false)
         dataSet.setDrawCircles(true)
+        dataSet.setCircleColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
         dataSet.lineWidth = 2f
 
         val data = LineData(dataSet)
@@ -314,7 +326,7 @@ class MainActivity : AppCompatActivity() {
         mChart.invalidate() //refresh
 
         val params = mChart.layoutParams
-        params.height = 400
+        params.height = 380
         mChart.layoutParams = params
         mChart.contentDescription = ""
         mChart.setBackgroundColor(Color.WHITE)
@@ -388,7 +400,7 @@ class MainActivity : AppCompatActivity() {
 
             val values = ContentValues()
 
-            values.put(Provider.Activity_Data.TIMESTAMP, System.currentTimeMillis())
+            values.put(Provider.Activity_Data.TIMESTAMP, today.timeInMillis)
             values.put(Provider.Activity_Data.DEVICE_ID, Aware.getSetting(applicationContext, Aware_Preferences.DEVICE_ID))
             values.put(Provider.Activity_Data.SENSOR_TYPE, "step_count")
             values.put(Provider.Activity_Data.VALUE, scores[i])
