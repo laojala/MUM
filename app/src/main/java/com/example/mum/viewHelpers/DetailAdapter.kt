@@ -9,7 +9,7 @@ import com.example.mum.R
 import com.example.mum.model.DetailItem
 import kotlinx.android.synthetic.main.detailed_activity_item.view.*
 
-class DetailAdapter(private val myDataset: Array<DetailItem>) : RecyclerView.Adapter<DetailAdapter.MyViewHolder>() {
+class DetailAdapter(public var myDataset: Array<DetailItem>) : RecyclerView.Adapter<DetailAdapter.MyViewHolder>() {
 
     class MyViewHolder(val view: View, val description: TextView, val value: TextView, val score: TextView) : RecyclerView.ViewHolder(view)
 

@@ -34,10 +34,10 @@ import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var detailAdapter: DetailAdapter
 
     companion object {
         const val GOOGLE_SIGN_IN_REQUEST_CODE = 10 // for later reference
-        const val LOG_TAG = "MUM Fitness History"
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -67,11 +67,11 @@ class MainActivity : AppCompatActivity() {
         val dummyList = getActivityList()
 
         val viewManager = LinearLayoutManager(this)
-        val viewAdapter = DetailAdapter(dummyList.values.toTypedArray())
+        detailAdapter = DetailAdapter(dummyList.values.toTypedArray())
 
         findViewById<RecyclerView>(R.id.detail_item_list).apply {
             layoutManager = viewManager
-            adapter = viewAdapter
+            adapter = detailAdapter
         }
     }
 
@@ -186,10 +186,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleGoogleSignIn() {
 
-//        val client = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN)
-//        client.signOut()
-
-
         // Check if user is already logged in
         if (GoogleSignIn.getLastSignedInAccount(this) == null) {
             // user is not signed in yet, open the sign in window
@@ -198,7 +194,7 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQUEST_CODE)
         } else {
             // user is already signed in, we can get the step count directly
-            updateTodaysStepCount(GoogleSignIn.getLastSignedInAccount(this)!!);
+            updateTodaysStepCount(GoogleSignIn.getLastSignedInAccount(this)!!)
         }
     }
 
@@ -233,7 +229,15 @@ class MainActivity : AppCompatActivity() {
             Provider.Activity_Data.SCORE,
             score
         ) // for socials can be kept in ms; transferred to mins for ui only
-        return applicationContext.contentResolver.insert(Provider.Activity_Data.CONTENT_URI, values)
+
+        val uri = applicationContext.contentResolver.insert(Provider.Activity_Data.CONTENT_URI, values)
+
+        // update the view
+        // includes reading from the database again
+        detailAdapter.myDataset = getActivityList().values.toTypedArray()
+        detailAdapter.notifyDataSetChanged()
+
+        return uri
     }
 
     // TODO move to an enum or something like that
