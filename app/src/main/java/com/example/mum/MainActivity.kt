@@ -59,9 +59,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        
-        // Create the connection to the Fitness API
-        handleGoogleSignIn()
 
         // set up the list with the details for the current day
         val dummyList = getActivityList()
@@ -79,8 +76,20 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
+        // Create the connection to the Fitness API
+        handleGoogleSignIn()
+
+        displayScore()
+
+    }
+
+    private fun displayScore() {
+
+
         val currentScore = getActivityList().values.sumBy { it.score }
 
+        detailAdapter.myDataset = getActivityList().values.toTypedArray()
+        detailAdapter.notifyDataSetChanged()
 
         // Colour the daily balance depending on its value
         if (currentScore >= 0) {
@@ -97,7 +106,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         score.text = currentScore.toString()
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -240,8 +248,8 @@ class MainActivity : AppCompatActivity() {
 
         // update the view
         // includes reading from the database again
-        detailAdapter.myDataset = getActivityList().values.toTypedArray()
-        detailAdapter.notifyDataSetChanged()
+
+        displayScore()
 
         return uri
     }
