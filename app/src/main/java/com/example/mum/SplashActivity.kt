@@ -61,7 +61,7 @@ class SplashActivity : AppCompatActivity() {
                     values.put(Provider.Activity_Data.DEVICE_ID, Aware.getSetting(applicationContext, Aware_Preferences.DEVICE_ID))
                     values.put(Provider.Activity_Data.SENSOR_TYPE, "social_apps")
                     values.put(Provider.Activity_Data.VALUE, time)
-                    values.put(Provider.Activity_Data.SCORE, -time) // for socials can be kept in ms; transferred to mins for ui only
+                    values.put(Provider.Activity_Data.SCORE, -time.div(60000)) // for socials can be kept in ms; transferred to mins for ui only
                     applicationContext.getContentResolver().insert(Provider.Activity_Data.CONTENT_URI, values)
 
                     // clear values for next turn
@@ -103,8 +103,8 @@ class SplashActivity : AppCompatActivity() {
 
         // Open MainActivity when all conditions are ok
         if (permissions_ok) {
-            val main = Intent(this, MainActivity::class.java)
-            startActivity(main)
+            val instructions = Intent(this, InstructionsActivity::class.java)
+            startActivity(instructions)
             finish()
 
         } else {

@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        return (totalScore /  60000)
+        return totalScore
 
     }
 
