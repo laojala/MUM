@@ -75,7 +75,10 @@ class SplashActivity : AppCompatActivity() {
                     app_name = data!!.getAsString("package_name")
 
                     if (app_name.equals("com.instagram.android") ||
-                        app_name.equals("com.google.android.youtube")) {
+                        app_name.equals("com.google.android.youtube") ||
+                        app_name.equals("com.whatsapp") ||
+                        app_name.equals("com.facebook.katana") ||
+                        app_name.equals("com.facebook.orca")) {
                         opened = data.getAsLong("timestamp")
                     }
                 }
