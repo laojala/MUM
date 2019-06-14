@@ -25,6 +25,7 @@ import com.google.android.gms.fitness.data.DataType
 import com.google.android.gms.fitness.data.Field.FIELD_STEPS
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
@@ -57,18 +58,19 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        var currentScore = getTodaySocialValue()
+        var currentScore = getActivityList().sumBy { it.score }
 
+        // Colour the daily balance depending on its value
         if (currentScore >= 0)
+            // good score - let's colour it green
             score.setTextColor(ContextCompat.getColor(this, R.color.positiveColor))
         else
+            // negative score - let's colour it red
             score.setTextColor(ContextCompat.getColor(this, R.color.negativeColor))
 
 
         score.text = currentScore.toString()
 
-
-        getTodaySocialValue()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -113,6 +115,9 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * returns the current day activities including description, score, and value from the database
+     */
     private fun getActivityList() : Array<DetailItem> {
 
         val coveredActivities = mutableListOf<String>()
@@ -182,7 +187,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 else {
                     val value = it.dataPoints[0].getValue(FIELD_STEPS).asInt()
-                    insertSensorValue("step_count", value, value) // TODO replace second value with score
+                    insertSensorValue("step_count", value, (value / 100.toDouble()).roundToInt())
                     println("step Count: ${it.dataPoints[0].getValue(FIELD_STEPS).asInt()}")
                 }
             }
