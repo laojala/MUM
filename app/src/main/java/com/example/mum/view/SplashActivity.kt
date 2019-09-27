@@ -1,12 +1,10 @@
-package com.example.mum
+package com.example.mum.view
 
 import android.Manifest
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-import android.os.PersistableBundle
 import android.support.v4.content.PermissionChecker
 import android.util.Log
 import com.aware.Applications

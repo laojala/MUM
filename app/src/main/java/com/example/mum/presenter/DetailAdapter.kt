@@ -1,4 +1,4 @@
-package com.example.mum.viewHelpers
+package com.example.mum.presenter
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.example.mum.R
 import com.example.mum.model.DetailItem
-import kotlinx.android.synthetic.main.detailed_activity_item.view.*
 
 class DetailAdapter(public var myDataset: Array<DetailItem>) : RecyclerView.Adapter<DetailAdapter.MyViewHolder>() {
 

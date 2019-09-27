@@ -1,10 +1,11 @@
-package com.example.mum
+package com.example.mum.view
 
 import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import com.example.mum.R
 
 class InstructionsActivity : AppCompatActivity() {
 

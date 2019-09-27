@@ -1,4 +1,4 @@
-package com.example.mum
+package com.example.mum.view
 
 import android.app.Activity
 import android.content.ContentValues
@@ -16,9 +16,10 @@ import android.view.Menu
 import android.view.MenuItem
 import com.aware.Aware
 import com.aware.Aware_Preferences
+import com.example.mum.R
 import com.example.mum.model.DetailItem
 import com.example.mum.model.Provider
-import com.example.mum.viewHelpers.DetailAdapter
+import com.example.mum.presenter.DetailAdapter
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -67,8 +68,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        addDummyHistoryData()
-
         // set up the list with the details for the current day
         val dummyList = getActivityList()
 
@@ -89,20 +88,16 @@ class MainActivity : AppCompatActivity() {
 
         // Create the connection to the Fitness API
         handleGoogleSignIn()
-
         displayScore()
-
     }
 
     private fun displayScore() {
-
-
         val currentScore = getActivityList().values.sumBy { it.score }
 
         detailAdapter.myDataset = getActivityList().values.toTypedArray()
         detailAdapter.notifyDataSetChanged()
 
-        // Colour the daily balance depending on its value
+        // Color the daily balance depending on its value
         if (currentScore >= 0) {
             // good score - let's colour it green
             score.setTextColor(ContextCompat.getColor(this, R.color.positiveColor))
@@ -117,9 +112,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         score.text = currentScore.toString()
-
         createHistoryGraph()
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -144,11 +137,9 @@ class MainActivity : AppCompatActivity() {
         val cursor = contentResolver.query(Provider.Activity_Data.CONTENT_URI, null, Provider.Activity_Data.TIMESTAMP + " >= " + today.timeInMillis + " AND " + Provider.Activity_Data.SENSOR_TYPE + " LIKE '${activity}'", null, null)
 
         return cursor
-
     }
 
     private fun getTodaySocialValue() : Int {
-
         var data = getTodayCursorForActivity("social_apps")
         var totalScore = 0
 
@@ -161,16 +152,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         return totalScore
-
     }
 
     /**
      * returns the current day activities including description, score, and value from the database
      */
     private fun getActivityList() : HashMap<String, DetailItem> {
-
         return getActivityListForDays(1, 0)
-
     }
 
     private fun getActivityListForDays(startDay : Int, endDay : Int) : HashMap<String, DetailItem>  {
@@ -212,7 +200,6 @@ class MainActivity : AppCompatActivity() {
                 }
 
             } while (data.moveToNext())
-
         }
 
         // the social app time is stored in milliseconds, but for the display, we want it in minutes
@@ -231,7 +218,9 @@ class MainActivity : AppCompatActivity() {
             // user is not signed in yet, open the sign in window
             val mGoogleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN)
             val signInIntent = mGoogleSignInClient.signInIntent
-            startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQUEST_CODE)
+            startActivityForResult(signInIntent,
+                GOOGLE_SIGN_IN_REQUEST_CODE
+            )
         } else {
             // user is already signed in, we can get the step count directly
             updateTodaysStepCount(GoogleSignIn.getLastSignedInAccount(this)!!)
@@ -256,7 +245,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             .addOnFailureListener { println("Couldn't retrieve data") }
-
     }
 
     private fun insertSensorValue(sensorType: String, value: Int, score: Int): Uri? {
@@ -274,7 +262,6 @@ class MainActivity : AppCompatActivity() {
 
         // update the view
         // includes reading from the database again
-
         displayScore()
 
         return uri
@@ -292,7 +279,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createHistoryGraph() {
-
         val date = Calendar.getInstance()
         date.add(Calendar.DAY_OF_YEAR, -4)
 
@@ -316,7 +302,9 @@ class MainActivity : AppCompatActivity() {
         dataSet.color = ContextCompat.getColor(this, R.color.colorPrimary)
         dataSet.setDrawValues(false)
         dataSet.setDrawCircles(true)
-        dataSet.setCircleColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+        dataSet.setCircleColor(ContextCompat.getColor(this,
+            R.color.colorPrimaryDark
+        ))
         dataSet.lineWidth = 2f
 
         val data = LineData(dataSet)
@@ -368,11 +356,9 @@ class MainActivity : AppCompatActivity() {
                 return mFormat.format(Date(value.toLong()))
             }
         }
-
     }
 
     private fun getScoresForLastDays(numberOfDays: Int) : HashMap<Calendar, Int> {
-
         val scoreList = hashMapOf<Calendar, Int>()
 
         for (i in numberOfDays downTo 1) {
@@ -388,29 +374,5 @@ class MainActivity : AppCompatActivity() {
         }
 
         return scoreList
-    }
-
-    private fun addDummyHistoryData() {
-
-        val scores = intArrayOf(242, 123, -12, 34)
-        val today = Calendar.getInstance()
-
-        for (i in 0 until scores.size) {
-            today.add(Calendar.DAY_OF_YEAR, -i - 1)
-
-            val values = ContentValues()
-
-            values.put(Provider.Activity_Data.TIMESTAMP, today.timeInMillis)
-            values.put(Provider.Activity_Data.DEVICE_ID, Aware.getSetting(applicationContext, Aware_Preferences.DEVICE_ID))
-            values.put(Provider.Activity_Data.SENSOR_TYPE, "step_count")
-            values.put(Provider.Activity_Data.VALUE, scores[i])
-            values.put(
-                Provider.Activity_Data.SCORE,
-                scores[i]
-            )
-
-            applicationContext.contentResolver.insert(Provider.Activity_Data.CONTENT_URI, values)
-        }
-
     }
 }

@@ -15,11 +15,11 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".InstructionsActivity">
+        <activity android:name=".view.InstructionsActivity">
         </activity>
-        <activity android:name=".MainActivity"/>
+        <activity android:name=".view.MainActivity"/>
         <activity
-                android:name=".SplashActivity"
+                android:name=".view.SplashActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/SplashTheme">
             <intent-filter>
